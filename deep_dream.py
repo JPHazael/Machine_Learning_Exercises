@@ -27,6 +27,10 @@ def main():
 			zip_ref.extractall(data_dir)
 
 	img_noise = np.random.uniform(size=(224,224,3)) + 100.0
+	img1 = PIL.Image.open('/Users/admin/Desktop/doggiverse_images/dalmation.jpg')
+	img1 = np.float32(img1)
+
+
 	model_fn = 'tensorflow_inception_graph.pb'
 
 	# create tensorflow session
@@ -79,7 +83,7 @@ def main():
 		'''Helper for getting layer output tensor'''
 		return graph.get_tensor_by_name("import/%s:0"%layer)
 	
-	def render_naive(t_obj, img0=img_noise, iter_n=20, step=1.0):
+	def render_naive(t_obj, img0=img_noise, iter_n=500, step=1.0):
 		t_score = tf.reduce_mean(t_obj) # defining the optimization objective
 		t_grad = tf.gradients(t_score, t_input)[0] # behold the power of automatic differentiation!
 		
@@ -124,7 +128,7 @@ def main():
 				grad[y:y+sz,x:x+sz] = g
 		return np.roll(np.roll(grad, -sx, 1), -sy, 0)
 
-	def render_deepdream(t_obj, img0 =img_noise, iter_n = 10, step=1.5, octave_n=4, octave_scale=1.4):
+	def render_deepdream(t_obj, img0 =img_noise, iter_n = 500, step=1.5, octave_n=4, octave_scale=1.5):
 		t_score = tf.reduce_mean(t_obj)
 		t_grad = tf.gradients(t_score, t_input)[0]
 
@@ -146,9 +150,9 @@ def main():
 				img += g*(step/ (np.abs(g).mean()+1e-7))
 				showarray(img/255.0)
 	layer = 'mixed4d_3x3_bottleneck_pre_relu'
-	channel = 139
+	channel = 100
 
-	img0 = PIL.Image.open('/Users/admin/Desktop/Python_Machine_Learning/data/JeffDaines_Snow.jpg')
+	img0 = PIL.Image.open('/Users/admin/Documents/Scandinavia/021.jpg')
 	img0 = np.float32(img0)
 
 	render_deepdream(tf.square(T('mixed4c')), img0)
